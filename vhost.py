@@ -59,30 +59,36 @@ if __name__ == '__main__':
 
     c = webtest.TestApp(App())
 
+    # no changes, if no headers are used
     response = c.get('/')
     assert response.body == b'/ - root'
 
     response = c.get('/blog')
     assert response.body == b'/blog - blog'
 
+    # X_VHM_HOST is a simple prefix..
     response = c.get('/', headers={'X_VHM_HOST': 'http://example.org'})
-    assert response.body == b'http://example.org/ - root'
-
-    response = c.get('/', headers={'X_VHM_HOST': 'http://example.org/'})
     assert response.body == b'http://example.org/ - root'
 
     response = c.get('/blog', headers={'X_VHM_HOST': 'http://example.org'})
     assert response.body == b'http://example.org/blog - blog'
 
+    # .. though it won't lead to '//'s in the url
+    response = c.get('/', headers={'X_VHM_HOST': 'http://example.org/'})
+    assert response.body == b'http://example.org/ - root'
+
+    # X_VHM_ROOT set to '/' has no influence
     response = c.get('/', headers={'X_VHM_ROOT': '/'})
     assert response.body == b'/ - root'
 
+    # just like X_VHM_HOST it tries to not introduce any '//'s
     response = c.get('/blog', headers={'X_VHM_ROOT': '/blog'})
     assert response.body == b'/ - blog'
 
     response = c.get('/blog', headers={'X_VHM_ROOT': '/blog/'})
     assert response.body == b'/ - blog'
 
+    # X_VHM_HOST and X_VHM_ROOT may be used together
     response = c.get('/blog', headers={
         'X_VHM_ROOT': '/blog', 'X_VHM_HOST': 'https://blog.example.org/'})
     assert response.body == b'https://blog.example.org/ - blog'
