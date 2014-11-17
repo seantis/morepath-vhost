@@ -95,6 +95,17 @@ return urls like this:
 
     blog.example.org/posts/2014-11-17-16:00
 
+
+### HTTP Forwarded Header
+
+The HTTP Forwarded header, defined in
+[RFC 7239](http://tools.ietf.org/html/rfc7239) partially touches the same
+subject.
+
+Morepath doesn't support this and similar headers so far, because it needs
+X_VHM_ROOT and X_VHM_HOST anyway and introducing more variables would just
+make it harder to reason about how the links are generated.
+
 ## Examples
 
 Since virtual hosting is mostly a deployment issue, the best way really show
